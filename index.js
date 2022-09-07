@@ -20,6 +20,7 @@ async function run() {
     try {
         await client.connect()
         const foodCollection = client.db('food').collection('item')
+        const orderCollection = client.db('food').collection('order')
 
         app.get('/foods', async (req, res) => {
             const query = {};
@@ -45,6 +46,12 @@ async function run() {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
             const result = await foodCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.post('/order', async (req, res) => {
+            const query = req.body;
+            const result = await orderCollection.insertOne(query)
             res.send(result)
         })
 
