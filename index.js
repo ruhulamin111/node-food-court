@@ -25,11 +25,28 @@ async function run() {
 
         app.post('/signin', async (req, res) => {
             const user = req.body;
-            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: "1d"
-            })
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" })
             res.send({ accessToken })
         })
+
+        app.get('/order', async (req, res) => {
+            const authHeader = req.headers.authorization;
+            console.log(authHeader);
+            const search = req.query.email;
+            const query = { email: search }
+            const cursor = orderCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+
+        app.post('/order', async (req, res) => {
+            const query = req.body;
+            const result = await orderCollection.insertOne(query)
+            res.send(result)
+        })
+
+
 
         app.get('/foods', async (req, res) => {
             const query = {};
@@ -55,20 +72,6 @@ async function run() {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
             const result = await foodCollection.deleteOne(query)
-            res.send(result)
-        })
-
-        app.post('/order', async (req, res) => {
-            const query = req.body;
-            const result = await orderCollection.insertOne(query)
-            res.send(result)
-        })
-
-        app.get('/order', async (req, res) => {
-            const search = req.query.email;
-            const query = { email: search }
-            const cursor = orderCollection.find(query)
-            const result = await cursor.toArray()
             res.send(result)
         })
 
