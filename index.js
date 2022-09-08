@@ -1,4 +1,5 @@
 const express = require('express');
+var jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
@@ -21,6 +22,14 @@ async function run() {
         await client.connect()
         const foodCollection = client.db('food').collection('item')
         const orderCollection = client.db('food').collection('order')
+
+        app.post('/signin', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: "1d"
+            })
+            res.send({ accessToken })
+        })
 
         app.get('/foods', async (req, res) => {
             const query = {};
